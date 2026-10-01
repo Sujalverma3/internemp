@@ -1,0 +1,99 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin User",
+      "email": "admin@internemp.com",
+      "password": "admin123",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "name": "Riya Sharma",
+      "email": "intern@internemp.com",
+      "password": "intern123",
+      "role": "intern",
+      "department": "Engineering",
+      "startDate": "2026-06-01",
+      "status": "active"
+    },
+    {
+      "id": "3",
+      "name": "Arjun Mehta",
+      "email": "arjun@internemp.com",
+      "password": "intern123",
+      "role": "intern",
+      "department": "Design",
+      "startDate": "2026-06-01",
+      "status": "active"
+    },
+    {
+      "id": "4",
+      "name": "Priya Patel",
+      "email": "priya@internemp.com",
+      "password": "intern123",
+      "role": "intern",
+      "department": "Marketing",
+      "startDate": "2026-07-01",
+      "status": "active"
+    },
+    {
+      "id": "f23922c8-5a17-4b00-9143-c0951d8fd913",
+      "role": "intern",
+      "status": "active",
+      "name": "sujal",
+      "email": "kenoyov106@bitproy.com",
+      "password": "adjrjfjriffij",
+      "department": "cse",
+      "startDate": "2007-08-26"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Build Login Page",
+      "description": "Create responsive login UI",
+      "assignedTo": "2",
+      "status": "completed",
+      "priority": "high",
+      "dueDate": "2026-09-15"
+    },
+    {
+      "id": "2",
+      "title": "Design Dashboard Mockup",
+      "description": "Create Figma mockup for the dashboard",
+      "assignedTo": "3",
+      "status": "in-progress",
+      "priority": "medium",
+      "dueDate": "2026-10-05"
+    },
+    {
+      "id": "3",
+      "title": "Social Media Campaign",
+      "description": "Plan Q4 social media strategy",
+      "assignedTo": "4",
+      "status": "pending",
+      "priority": "low",
+      "dueDate": "2026-10-20"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "5394b2bd-877a-471f-9da5-6de6d65ac9ff",
+      "userId": "2",
+      "userName": "Riya Sharma",
+      "date": "2026-10-01",
+      "checkIn": "2026-10-01T10:34:16.786Z",
+      "checkOut": null
+    }
+  ],
+  "announcements": [
+    {
+      "id": "1",
+      "title": "Welcome to InterneMP!",
+      "content": "We are excited to have you on board. Please complete your onboarding tasks.",
+      "date": "2026-09-30",
+      "author": "Admin"
+    }
+  ]
+}
