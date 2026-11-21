@@ -48,10 +48,10 @@ export default function Login() {
     <div className="min-h-screen flex w-full bg-background selection:bg-primary/20">
       {/* Left Panel — Full-Bleed Architectural Visual Experience (Desktop) */}
       <div className="hidden lg:relative lg:flex flex-col justify-between w-1/2 min-h-screen p-12 overflow-hidden border-r border-border/60">
-        {/* Architectural Workspace Hero Image */}
+        {/* College Students Collaboration Hero Image */}
         <img
           src="/login-hero.jpg"
-          alt="InterneMP modern architectural studio workspace"
+          alt="College interns collaborating on a tech project"
           className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.05] transition-transform duration-700 hover:scale-[1.02]"
         />
 
