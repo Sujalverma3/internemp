@@ -22,11 +22,17 @@ if (process.env.VERCEL) {
   dbFilePath = tmpPath;
 }
 
+// In-memory singleton to eliminate redundant disk reads on every request
+let dbInstance = null;
+
 export async function getDb() {
-  return await JSONFilePreset(dbFilePath, {
-    users: [],
-    tasks: [],
-    attendance: [],
-    announcements: []
-  });
+  if (!dbInstance) {
+    dbInstance = await JSONFilePreset(dbFilePath, {
+      users: [],
+      tasks: [],
+      attendance: [],
+      announcements: []
+    });
+  }
+  return dbInstance;
 }
