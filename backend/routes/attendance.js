@@ -1,42 +1,37 @@
 import { Router } from 'express';
-import { JSONFilePreset } from 'lowdb/node';
 import { authenticate } from '../middleware/auth.js';
 import { randomUUID } from 'crypto';
+import { getDb } from '../db.js';
 
 const router = Router();
 
 router.get('/', authenticate, async (req, res) => {
-  const db = await JSONFilePreset('./db.json', {});
+  const db = await getDb();
   const today = new Date().toISOString().split('T')[0];
   const { history, userId } = req.query;
 
   let records = db.data.attendance;
 
   if (req.user.role === 'intern') {
-    // Interns can only see their own records
     records = records.filter(a => a.userId === req.user.id);
     if (!history) {
-      // Default: today only (for dashboard)
       records = records.filter(a => a.date === today);
     }
   } else {
-    // Admin: filter by date unless history=true
     if (!history) {
       records = records.filter(a => a.date === today);
     }
-    // Admin can optionally filter by userId
     if (userId) {
       records = records.filter(a => a.userId === userId);
     }
   }
 
-  // Sort descending by date
   records = records.sort((a, b) => b.date.localeCompare(a.date));
   res.json(records);
 });
 
 router.post('/checkin', authenticate, async (req, res) => {
-  const db = await JSONFilePreset('./db.json', {});
+  const db = await getDb();
   const today = new Date().toISOString().split('T')[0];
   const existing = db.data.attendance.find(a => a.userId === req.user.id && a.date === today);
   if (existing) return res.status(400).json({ error: 'Already checked in today' });
@@ -47,7 +42,7 @@ router.post('/checkin', authenticate, async (req, res) => {
 });
 
 router.post('/checkout', authenticate, async (req, res) => {
-  const db = await JSONFilePreset('./db.json', {});
+  const db = await getDb();
   const today = new Date().toISOString().split('T')[0];
   const idx = db.data.attendance.findIndex(a => a.userId === req.user.id && a.date === today && !a.checkOut);
   if (idx === -1) return res.status(400).json({ error: 'No active check-in found' });

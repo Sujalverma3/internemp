@@ -7,7 +7,7 @@ import attendanceRoutes from './routes/attendance.js';
 import announcementRoutes from './routes/announcements.js';
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
@@ -16,5 +16,14 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/announcements', announcementRoutes);
 
-const PORT = 3001;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// Health check endpoint
+app.get('/api', (req, res) => {
+  res.json({ status: 'ok', name: 'InterneMP API' });
+});
+
+const PORT = process.env.PORT || 3001;
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}
+
+export default app;
