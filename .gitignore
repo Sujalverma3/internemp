@@ -19,3 +19,8 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Media & Screen recordings
+*.webm
+*.mp4
+*.mkv
