@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  Eye, EyeOff, ShieldCheck, UserCheck, CalendarDays,
-  CheckCircle2, Sun, Moon, ArrowRight, Sparkles, Building2
+  Eye, EyeOff, ShieldCheck, UserCheck, Sun, Moon, ArrowRight
 } from 'lucide-react'
 
 export default function Login() {
@@ -47,88 +46,44 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex w-full bg-background selection:bg-primary/20">
-      {/* Left Panel — Editorial Product Showcase (Desktop) */}
-      <div className="hidden lg:flex flex-col justify-between w-1/2 bg-zinc-950 text-zinc-100 p-12 relative overflow-hidden border-r border-zinc-800/80">
-        {/* Subtle Ambient Radial Gradients (Grounded & Non-Cheesy) */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Left Panel — Full-Bleed Architectural Visual Experience (Desktop) */}
+      <div className="hidden lg:relative lg:flex flex-col justify-between w-1/2 min-h-screen p-12 overflow-hidden border-r border-border/60">
+        {/* Architectural Workspace Hero Image */}
+        <img
+          src="/login-hero.jpg"
+          alt="InterneMP modern architectural studio workspace"
+          className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.05] transition-transform duration-700 hover:scale-[1.02]"
+        />
 
-        {/* Subtle Dot Grid */}
-        <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
+        {/* Sophisticated Dark Gradient Scrim to ensure crisp branding and high contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50" />
+        <div className="absolute inset-0 bg-zinc-950/20 mix-blend-multiply" />
 
         {/* Top Brand Bar */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center shadow-inner">
-            <span className="text-white font-bold text-sm tracking-wider">IE</span>
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-sm tracking-wider">IE</span>
+            </div>
+            <div>
+              <span className="text-base font-semibold tracking-tight text-white drop-shadow-sm">InterneMP</span>
+              <span className="text-xs text-white/70 block -mt-0.5 font-mono">Workspace</span>
+            </div>
           </div>
-          <div>
-            <span className="text-base font-semibold tracking-tight text-zinc-100">InterneMP</span>
-            <span className="text-xs text-zinc-500 block -mt-0.5 font-mono">v1.0 • Portal</span>
+
+          <div className="px-3 py-1 rounded-full bg-black/40 border border-white/15 backdrop-blur-md text-xs text-white/90 font-medium">
+            Cohort 2026
           </div>
         </div>
 
-        {/* Center Live Product Preview Mockup */}
-        <div className="relative z-10 my-auto py-8">
-          <div className="max-w-md">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-zinc-400 mb-6 backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Fall Cohort 2026 Session Live</span>
-            </div>
-
-            <h2 className="text-3xl font-bold tracking-tight text-zinc-100 mb-4 leading-tight">
-              A clean workspace for teams managing internships.
-            </h2>
-
-            <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
-              Track attendance timestamps, assign cohort deliverables, and review individual progression without sprawling spreadsheets.
-            </p>
-
-            {/* Micro Dashboard Card */}
-            <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-2xl backdrop-blur-md space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80 text-xs">
-                <span className="text-zinc-400 font-medium flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-zinc-500" /> Engineering & Design Cohort
-                </span>
-                <span className="text-emerald-400 font-mono font-medium">94% On Track</span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/60">
-                  <p className="text-[11px] text-zinc-500">Active Interns</p>
-                  <p className="text-lg font-bold font-mono text-zinc-100 mt-0.5">4</p>
-                </div>
-                <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/60">
-                  <p className="text-[11px] text-zinc-500">Completed</p>
-                  <p className="text-lg font-bold font-mono text-emerald-400 mt-0.5">10</p>
-                </div>
-                <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/60">
-                  <p className="text-[11px] text-zinc-500">In Progress</p>
-                  <p className="text-lg font-bold font-mono text-blue-400 mt-0.5">3</p>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/60 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span className="text-zinc-300 truncate max-w-[220px]">Build Login Page & Auth Flow</span>
-                </div>
-                <span className="text-[11px] text-zinc-500 font-mono">Today</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Feature Badges */}
-        <div className="relative z-10 pt-6 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-zinc-400" /> Role-Based JWT
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CalendarDays className="w-3.5 h-3.5 text-zinc-400" /> Daily Check-In
-            </span>
-          </div>
-          <span className="font-mono text-zinc-600">v1.0.0</span>
+        {/* Bottom Minimalist Editorial Tagline (Image-driven, letting the visual breathe) */}
+        <div className="relative z-10 space-y-2 max-w-md">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight drop-shadow-md">
+            Empowering the next generation of builders.
+          </h2>
+          <p className="text-xs font-mono text-white/70 tracking-wider uppercase">
+            InterneMP • Talent Management Portal
+          </p>
         </div>
       </div>
 
