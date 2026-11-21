@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  Eye, EyeOff, ShieldCheck, UserCheck, Sun, Moon, ArrowRight
+  Eye, EyeOff, Sun, Moon, ArrowRight
 } from 'lucide-react'
 
 export default function Login() {
@@ -17,17 +17,9 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [selectedRole, setSelectedRole] = useState(null)
   const { login } = useAuth()
   const { theme, toggle } = useTheme()
   const navigate = useNavigate()
-
-  const handleFillDemo = (role, demoEmail, demoPassword) => {
-    setEmail(demoEmail)
-    setPassword(demoPassword)
-    setSelectedRole(role)
-    setError('')
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -122,40 +114,6 @@ export default function Login() {
               </p>
             </div>
 
-            {/* Quick Demo Fill Buttons (High UX Polish) */}
-            <div className="mb-6 p-1.5 rounded-xl bg-muted/60 border border-border">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pt-1 pb-1.5">
-                Quick-Fill Demo Accounts
-              </p>
-              <div className="grid grid-cols-2 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleFillDemo('admin', 'admin@internemp.com', 'admin123')}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                    selectedRole === 'admin'
-                      ? 'bg-background text-foreground shadow-sm border border-border'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
-                  }`}
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
-                  <span>Admin</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleFillDemo('intern', 'intern@internemp.com', 'intern123')}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                    selectedRole === 'intern'
-                      ? 'bg-background text-foreground shadow-sm border border-border'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
-                  }`}
-                >
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>Intern</span>
-                </button>
-              </div>
-            </div>
-
             {/* Error Message */}
             <AnimatePresence>
               {error && (
@@ -184,10 +142,7 @@ export default function Login() {
                   type="email"
                   autoComplete="email"
                   value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value)
-                    setSelectedRole(null)
-                  }}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
                   required
                   className="h-10 bg-background/50 border-input focus-visible:ring-primary/40 text-sm"
@@ -206,10 +161,7 @@ export default function Login() {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value)
-                      setSelectedRole(null)
-                    }}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
                     className="h-10 pr-10 bg-background/50 border-input focus-visible:ring-primary/40 text-sm font-mono"
