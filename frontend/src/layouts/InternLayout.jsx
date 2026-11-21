@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { LayoutDashboard, CheckSquare, CalendarDays, LogOut, Menu, X, Sun, Moon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Logo from '@/components/Logo'
 
 const navItems = [
   { to: '/intern', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -19,12 +20,7 @@ function SidebarContent({ onClose }) {
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       <div className="flex items-center justify-between px-5 h-14 border-b border-sidebar-border">
-        <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded bg-white/10 border border-white/20 flex items-center justify-center">
-            <span className="text-white font-bold text-[10px]">IE</span>
-          </div>
-          <span className="font-semibold text-sm tracking-tight">InterneMP</span>
-        </div>
+        <Logo size="sm" showText={true} textClassName="text-sidebar-foreground font-semibold text-sm tracking-tight" />
         {onClose && (
           <button onClick={onClose} className="text-sidebar-foreground/60 hover:text-sidebar-foreground">
             <X className="w-4 h-4" />

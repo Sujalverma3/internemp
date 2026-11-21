@@ -7,6 +7,7 @@ import api from '../api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Logo from '@/components/Logo'
 import {
   Eye, EyeOff, Sun, Moon, ArrowRight
 } from 'lucide-react'
@@ -54,9 +55,7 @@ export default function Login() {
         {/* Top Brand Bar */}
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-sm tracking-wider">IE</span>
-            </div>
+            <Logo size="lg" />
             <div>
               <span className="text-base font-semibold tracking-tight text-white drop-shadow-sm">InterneMP</span>
               <span className="text-xs text-white/70 block -mt-0.5 font-mono">Workspace</span>
@@ -84,10 +83,7 @@ export default function Login() {
         {/* Top Utility Nav (Theme Switcher & Mobile Brand) */}
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2.5 lg:hidden">
-            <div className="w-8 h-8 rounded-lg bg-zinc-900 text-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center font-bold text-xs shadow-sm">
-              IE
-            </div>
-            <span className="font-semibold text-sm tracking-tight text-foreground">InterneMP</span>
+            <Logo size="md" showText={true} />
           </div>
 
           <button
