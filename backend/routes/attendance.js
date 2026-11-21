@@ -8,8 +8,30 @@ const router = Router();
 router.get('/', authenticate, async (req, res) => {
   const db = await JSONFilePreset('./db.json', {});
   const today = new Date().toISOString().split('T')[0];
-  let records = db.data.attendance.filter(a => a.date === today);
-  if (req.user.role === 'intern') records = records.filter(a => a.userId === req.user.id);
+  const { history, userId } = req.query;
+
+  let records = db.data.attendance;
+
+  if (req.user.role === 'intern') {
+    // Interns can only see their own records
+    records = records.filter(a => a.userId === req.user.id);
+    if (!history) {
+      // Default: today only (for dashboard)
+      records = records.filter(a => a.date === today);
+    }
+  } else {
+    // Admin: filter by date unless history=true
+    if (!history) {
+      records = records.filter(a => a.date === today);
+    }
+    // Admin can optionally filter by userId
+    if (userId) {
+      records = records.filter(a => a.userId === userId);
+    }
+  }
+
+  // Sort descending by date
+  records = records.sort((a, b) => b.date.localeCompare(a.date));
   res.json(records);
 });
 

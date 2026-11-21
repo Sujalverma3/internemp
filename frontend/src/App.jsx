@@ -15,15 +15,15 @@ import MyAttendance from './pages/intern/MyAttendance'
 
 function ProtectedRoute({ children, role }) {
   const { user } = useAuth()
-  if (!user) return <Navigate to="/login" />
-  if (role && user.role !== role) return <Navigate to="/" />
+  if (!user) return <Navigate to="/login" replace />
+  if (role && user.role !== role) return <Navigate to="/" replace />
   return children
 }
 
 function RootRedirect() {
   const { user } = useAuth()
-  if (!user) return <Navigate to="/login" />
-  return user.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/intern" />
+  if (!user) return <Navigate to="/login" replace />
+  return user.role === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/intern" replace />
 }
 
 export default function App() {

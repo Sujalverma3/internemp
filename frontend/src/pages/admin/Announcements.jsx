@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import api from '../../api'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Plus, Trash2 } from 'lucide-react'
+import { PageTransition, StaggerList, StaggerItem } from '@/components/motion'
 
 export default function Announcements() {
   const [announcements, setAnnouncements] = useState([])
@@ -9,8 +16,7 @@ export default function Announcements() {
 
   const fetchAnnouncements = async () => {
     const res = await api.get('/announcements')
-    setAnnouncements(res.data.reverse())
-    setLoading(false)
+    setAnnouncements(res.data.reverse()); setLoading(false)
   }
 
   useEffect(() => { fetchAnnouncements() }, [])
@@ -18,63 +24,76 @@ export default function Announcements() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     await api.post('/announcements', form)
-    setForm({ title: '', content: '' })
-    setShowForm(false)
-    fetchAnnouncements()
+    setForm({ title: '', content: '' }); setShowForm(false); fetchAnnouncements()
   }
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this announcement?')) return
-    await api.delete(`/announcements/${id}`)
-    fetchAnnouncements()
+    await api.delete(`/announcements/${id}`); fetchAnnouncements()
   }
 
-  if (loading) return <div className="text-center py-20 text-gray-500">Loading...</div>
+  if (loading) return <div className="text-center py-20 text-sm text-muted-foreground">Loading…</div>
 
   return (
-    <div className="space-y-6">
+    <PageTransition className="space-y-5 max-w-3xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Announcements</h1>
-        <button onClick={() => setShowForm(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">+ New Announcement</button>
-      </div>
-
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h2 className="text-lg font-bold mb-4">New Announcement</h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={4} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Post</button>
-                <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
-              </div>
-            </form>
-          </div>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Announcements</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{announcements.length} posted</p>
         </div>
-      )}
-
-      <div className="space-y-4">
-        {announcements.map(a => (
-          <div key={a.id} className="bg-white rounded-xl shadow-sm p-5">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-semibold text-gray-900">{a.title}</h3>
-                <p className="text-xs text-gray-400 mt-0.5">{a.date} · by {a.author}</p>
-              </div>
-              <button onClick={() => handleDelete(a.id)} className="text-red-400 hover:text-red-600">🗑</button>
-            </div>
-            <p className="text-sm text-gray-600 mt-3">{a.content}</p>
-          </div>
-        ))}
-        {announcements.length === 0 && <p className="text-center py-10 text-gray-500">No announcements yet.</p>}
+        <Button size="sm" onClick={() => setShowForm(true)}>
+          <Plus className="w-4 h-4" /> New announcement
+        </Button>
       </div>
-    </div>
+
+      <StaggerList className="space-y-3">
+        {announcements.map(a => (
+          <StaggerItem key={a.id}>
+            <Card>
+              <CardContent className="p-5">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-medium text-sm">{a.title}</h3>
+                      <span className="text-xs text-muted-foreground">· {a.date}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{a.content}</p>
+                    <p className="text-xs text-muted-foreground/70 mt-2">by {a.author}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(a.id)} className="text-muted-foreground hover:text-destructive shrink-0">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+        ))}
+        {announcements.length === 0 && (
+          <Card><CardContent className="py-12 text-center text-sm text-muted-foreground">No announcements yet.</CardContent></Card>
+        )}
+      </StaggerList>
+
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>New announcement</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-3 mt-2">
+            <div className="space-y-1.5">
+              <Label>Title</Label>
+              <Input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Content</Label>
+              <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={4} required className="flex w-full border border-input rounded-md px-3 py-2 text-sm bg-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none" />
+            </div>
+            <div className="flex gap-2 pt-1">
+              <Button type="submit" className="flex-1">Post</Button>
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancel</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </PageTransition>
   )
 }

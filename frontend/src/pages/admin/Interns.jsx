@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import api from '../../api'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Search, Plus, Pencil, Trash2 } from 'lucide-react'
+import { PageTransition, AnimatedRow } from '@/components/motion'
 
-const emptyForm = { name: '', email: '', password: '', department: '', startDate: '' }
+const emptyForm = { name: '', email: '', password: '', department: '', startDate: '', status: 'active' }
 
 export default function Interns() {
   const [interns, setInterns] = useState([])
@@ -9,6 +17,8 @@ export default function Interns() {
   const [editing, setEditing] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
 
   const fetchInterns = async () => {
     const res = await api.get('/interns')
@@ -20,113 +30,160 @@ export default function Interns() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (editing) {
-      await api.put(`/interns/${editing}`, form)
-    } else {
-      await api.post('/interns', form)
-    }
-    setForm(emptyForm)
-    setEditing(null)
-    setShowForm(false)
-    fetchInterns()
+    const payload = { ...form }
+    if (editing && !payload.password) delete payload.password
+    if (editing) { await api.put(`/interns/${editing}`, payload) }
+    else { await api.post('/interns', payload) }
+    setForm(emptyForm); setEditing(null); setShowForm(false); fetchInterns()
   }
 
   const handleEdit = (intern) => {
-    setForm({ name: intern.name, email: intern.email, password: '', department: intern.department || '', startDate: intern.startDate || '' })
-    setEditing(intern.id)
-    setShowForm(true)
+    setForm({ name: intern.name, email: intern.email, password: '', department: intern.department || '', startDate: intern.startDate || '', status: intern.status || 'active' })
+    setEditing(intern.id); setShowForm(true)
   }
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this intern?')) return
-    await api.delete(`/interns/${id}`)
-    fetchInterns()
+    await api.delete(`/interns/${id}`); fetchInterns()
   }
 
-  const statusBadge = (status) => {
-    const colors = { active: 'bg-green-100 text-green-700', inactive: 'bg-gray-100 text-gray-600' }
-    return <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-600'}`}>{status}</span>
-  }
+  const filtered = interns.filter(i => {
+    const q = search.toLowerCase()
+    const matchSearch = !q || i.name?.toLowerCase().includes(q) || i.email?.toLowerCase().includes(q) || i.department?.toLowerCase().includes(q)
+    const matchStatus = !filterStatus || i.status === filterStatus
+    return matchSearch && matchStatus
+  })
 
-  if (loading) return <div className="text-center py-20 text-gray-500">Loading...</div>
+  if (loading) return <div className="text-center py-20 text-sm text-muted-foreground">Loading…</div>
 
   return (
-    <div className="space-y-6">
+    <PageTransition className="space-y-5 max-w-5xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Interns</h1>
-        <button onClick={() => { setForm(emptyForm); setEditing(null); setShowForm(true) }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-          + Add Intern
-        </button>
-      </div>
-
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h2 className="text-lg font-bold mb-4">{editing ? 'Edit Intern' : 'Add Intern'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {['name', 'email', 'department'].map(f => (
-                <div key={f}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">{f}</label>
-                  <input type={f === 'email' ? 'email' : 'text'} value={form[f]} onChange={e => setForm({ ...form, [f]: e.target.value })} required={f !== 'department'}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-              ))}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password {editing && '(leave blank to keep)'}</label>
-                <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required={!editing}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" value={form.startDate} onChange={e => setForm({ ...form, startDate: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">{editing ? 'Update' : 'Create'}</button>
-                <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
-              </div>
-            </form>
-          </div>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Interns</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{interns.length} total</p>
         </div>
-      )}
-
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              {['Name', 'Email', 'Department', 'Start Date', 'Status', 'Actions'].map(h => (
-                <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {interns.map(intern => (
-              <tr key={intern.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-700 text-xs font-bold">{intern.name?.[0]}</span>
-                    </div>
-                    <span className="font-medium text-sm">{intern.name}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-600">{intern.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{intern.department || '—'}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{intern.startDate || '—'}</td>
-                <td className="px-6 py-4">{statusBadge(intern.status)}</td>
-                <td className="px-6 py-4">
-                  <div className="flex gap-2">
-                    <button onClick={() => handleEdit(intern)} className="text-blue-600 hover:underline text-sm">Edit</button>
-                    <button onClick={() => handleDelete(intern.id)} className="text-red-500 hover:underline text-sm">Delete</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {interns.length === 0 && <p className="text-center py-10 text-gray-500">No interns found.</p>}
+        <Button size="sm" onClick={() => { setForm(emptyForm); setEditing(null); setShowForm(true) }}>
+          <Plus className="w-4 h-4" /> Add intern
+        </Button>
       </div>
-    </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-4 flex flex-wrap gap-3 items-end">
+          <div className="flex-1 min-w-48 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search name, email or department…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <select
+            value={filterStatus}
+            onChange={e => setFilterStatus(e.target.value)}
+            className="h-9 border border-input rounded-md px-3 text-sm bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+          >
+            <option value="">All status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          {(search || filterStatus) && (
+            <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setFilterStatus('') }}>Clear</Button>
+          )}
+          <span className="text-xs text-muted-foreground ml-auto">{filtered.length} of {interns.length}</span>
+        </CardContent>
+      </Card>
+
+      {/* Table */}
+      <Card>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="px-5 py-3 text-left font-medium text-muted-foreground">Name</th>
+                <th className="px-5 py-3 text-left font-medium text-muted-foreground">Email</th>
+                <th className="px-5 py-3 text-left font-medium text-muted-foreground">Department</th>
+                <th className="px-5 py-3 text-left font-medium text-muted-foreground">Start</th>
+                <th className="px-5 py-3 text-left font-medium text-muted-foreground">Status</th>
+                <th className="px-5 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((intern, idx) => (
+                <AnimatedRow key={intern.id} index={idx} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <span className="text-primary text-xs font-semibold">{intern.name?.[0]}</span>
+                      </div>
+                      <span className="font-medium">{intern.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5 text-muted-foreground">{intern.email}</td>
+                  <td className="px-5 py-3.5 text-muted-foreground">{intern.department || '—'}</td>
+                  <td className="px-5 py-3.5 text-muted-foreground">{intern.startDate || '—'}</td>
+                  <td className="px-5 py-3.5">
+                    <Badge variant={intern.status === 'active' ? 'success' : 'muted'}>{intern.status}</Badge>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-1 justify-end">
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(intern)}>
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(intern.id)} className="text-destructive hover:text-destructive">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </td>
+                </AnimatedRow>
+              ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={6} className="text-center py-12 text-sm text-muted-foreground">
+                  {interns.length === 0 ? 'No interns yet. Add your first one.' : 'No results for current filters.'}
+                </td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {/* Modal */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editing ? 'Edit intern' : 'Add intern'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-3 mt-2">
+            {['name', 'email', 'department'].map(f => (
+              <div key={f} className="space-y-1.5">
+                <Label className="capitalize">{f}</Label>
+                <Input type={f === 'email' ? 'email' : 'text'} value={form[f]} onChange={e => setForm({ ...form, [f]: e.target.value })} required={f !== 'department'} />
+              </div>
+            ))}
+            <div className="space-y-1.5">
+              <Label>{editing ? 'New password (optional)' : 'Password'}</Label>
+              <Input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required={!editing} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Start date</Label>
+              <Input type="date" value={form.startDate} onChange={e => setForm({ ...form, startDate: e.target.value })} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Status</Label>
+              <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="flex h-9 w-full border border-input rounded-md px-3 text-sm bg-background focus:outline-none focus:ring-1 focus:ring-ring">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <div className="flex gap-2 pt-1">
+              <Button type="submit" className="flex-1">{editing ? 'Save changes' : 'Add intern'}</Button>
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancel</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </PageTransition>
   )
 }
