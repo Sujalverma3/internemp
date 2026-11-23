@@ -22,7 +22,8 @@ app.get('/api', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-if (!process.env.VERCEL) {
+const isMain = process.argv[1] && (process.argv[1].endsWith('server.js') || process.argv[1].endsWith('server'));
+if (!process.env.VERCEL && isMain) {
   app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 }
 

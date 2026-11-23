@@ -61,6 +61,19 @@ export default function MyAttendance() {
   const formatTime = (iso) =>
     iso ? new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—'
 
+  const formatDuration = (checkIn, checkOut, durationMinutes) => {
+    if (!checkIn) return '—'
+    if (!checkOut) return 'In session'
+    const totalMin = durationMinutes !== undefined && durationMinutes !== null
+      ? durationMinutes
+      : Math.max(0, Math.round((new Date(checkOut) - new Date(checkIn)) / 60000))
+    const hrs = Math.floor(totalMin / 60)
+    const mins = totalMin % 60
+    if (hrs === 0) return `${mins}m`
+    if (mins === 0) return `${hrs}h`
+    return `${hrs}h ${mins}m`
+  }
+
   if (loading) return <div className="text-center py-20 text-sm text-muted-foreground">Loading attendance…</div>
 
   const todayCheckedIn = attendance && !attendance.checkOut
@@ -239,7 +252,7 @@ export default function MyAttendance() {
                       {formatTime(r.checkOut)}
                     </td>
                     <td className="px-5 py-3.5 text-muted-foreground tabular-nums font-mono">
-                      {durationH !== null ? `${durationH} hrs` : 'In progress'}
+                      {formatDuration(r.checkIn, r.checkOut, r.durationMinutes)}
                     </td>
                     <td className="px-5 py-3.5">
                       <Badge variant={r.checkOut ? 'muted' : 'success'}>

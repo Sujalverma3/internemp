@@ -19,6 +19,7 @@ export default function Interns() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
+  const [formError, setFormError] = useState('')
 
   const fetchInterns = async () => {
     const res = await api.get('/interns')
@@ -30,14 +31,20 @@ export default function Interns() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setFormError('')
     const payload = { ...form }
     if (editing && !payload.password) delete payload.password
-    if (editing) { await api.put(`/interns/${editing}`, payload) }
-    else { await api.post('/interns', payload) }
-    setForm(emptyForm); setEditing(null); setShowForm(false); fetchInterns()
+    try {
+      if (editing) { await api.put(`/interns/${editing}`, payload) }
+      else { await api.post('/interns', payload) }
+      setForm(emptyForm); setEditing(null); setShowForm(false); fetchInterns()
+    } catch (err) {
+      setFormError(err.response?.data?.error || 'Operation failed. Please verify the input.')
+    }
   }
 
   const handleEdit = (intern) => {
+    setFormError('')
     setForm({ name: intern.name, email: intern.email, password: '', department: intern.department || '', startDate: intern.startDate || '', status: intern.status || 'active' })
     setEditing(intern.id); setShowForm(true)
   }
@@ -150,11 +157,16 @@ export default function Interns() {
       </Card>
 
       {/* Modal */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
+      <Dialog open={showForm} onOpenChange={(open) => { setShowForm(open); if (!open) setFormError(''); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit intern' : 'Add intern'}</DialogTitle>
           </DialogHeader>
+          {formError && (
+            <div className="p-3 text-xs rounded-md bg-destructive/10 border border-destructive/20 text-destructive">
+              {formError}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-3 mt-2">
             {['name', 'email', 'department'].map(f => (
               <div key={f} className="space-y-1.5">

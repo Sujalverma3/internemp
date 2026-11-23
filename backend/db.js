@@ -1,4 +1,5 @@
-import { JSONFilePreset } from 'lowdb/node';
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -27,12 +28,19 @@ let dbInstance = null;
 
 export async function getDb() {
   if (!dbInstance) {
-    dbInstance = await JSONFilePreset(dbFilePath, {
+    const defaultData = {
       users: [],
       tasks: [],
       attendance: [],
       announcements: []
-    });
+    };
+    const adapter = new JSONFile(dbFilePath);
+    dbInstance = new Low(adapter, defaultData);
+    await dbInstance.read();
+    if (!dbInstance.data) {
+      dbInstance.data = defaultData;
+      await dbInstance.write();
+    }
   }
   return dbInstance;
 }

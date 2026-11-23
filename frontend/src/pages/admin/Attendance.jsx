@@ -24,6 +24,19 @@ export default function AdminAttendance() {
 
   const formatTime = (iso) => iso ? new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—'
 
+  const formatDuration = (checkIn, checkOut, durationMinutes) => {
+    if (!checkIn) return '—'
+    if (!checkOut) return 'Active'
+    const totalMin = durationMinutes !== undefined && durationMinutes !== null
+      ? durationMinutes
+      : Math.max(0, Math.round((new Date(checkOut) - new Date(checkIn)) / 60000))
+    const hrs = Math.floor(totalMin / 60)
+    const mins = totalMin % 60
+    if (hrs === 0) return `${mins}m`
+    if (mins === 0) return `${hrs}h`
+    return `${hrs}h ${mins}m`
+  }
+
   const filtered = records.filter(r => {
     const matchDate = showAll ? (!filterDate || r.date === filterDate) : true
     const matchIntern = !filterIntern || r.userId === filterIntern
@@ -87,8 +100,7 @@ export default function AdminAttendance() {
             </thead>
             <tbody>
               {filtered.map((r, idx) => {
-                const durationMs = r.checkOut ? new Date(r.checkOut) - new Date(r.checkIn) : null
-                const durationH = durationMs ? Math.round(durationMs / 3600000 * 10) / 10 : null
+                const durationLabel = formatDuration(r.checkIn, r.checkOut, r.durationMinutes)
                 return (
                   <AnimatedRow key={r.id} index={idx} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="px-5 py-3.5">
@@ -102,7 +114,7 @@ export default function AdminAttendance() {
                     {showAll && <td className="px-5 py-3.5 text-muted-foreground">{r.date}</td>}
                     <td className="px-5 py-3.5 text-muted-foreground tabular-nums">{formatTime(r.checkIn)}</td>
                     <td className="px-5 py-3.5 text-muted-foreground tabular-nums">{formatTime(r.checkOut)}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground tabular-nums">{durationH !== null ? `${durationH}h` : '—'}</td>
+                    <td className="px-5 py-3.5 text-muted-foreground tabular-nums font-mono text-xs">{durationLabel}</td>
                     <td className="px-5 py-3.5">
                       <Badge variant={r.checkOut ? 'muted' : 'success'}>{r.checkOut ? 'Checked out' : 'Active'}</Badge>
                     </td>
